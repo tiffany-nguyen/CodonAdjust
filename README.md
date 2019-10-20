@@ -1,4 +1,4 @@
-CodonAdjust
+# CodonAdjust
 ========
 CodonAdjust is a free software to optimize a nucleotide composition mimicking a certain AA profile. CodonAdjust formulates the optimization of a nucleotide composition as a non-convex optimization problem which minimizes the squared error between the desired and the calculated AA profiles. We provide CodonAdjust with four different programs, which have various customization in practical scenarios such as selecting or avoiding specific codons.
 
@@ -35,3 +35,16 @@ CodonAdjust is a free software to optimize a nucleotide composition mimicking a 
 
 	6. 
 # Usage
+	1. For allstop program
+		Rscript optimize_codon_allstop.R aa_input nt_input outdir
+	2. For nostop program
+		Rscript optimize_codon_nostop.R aa_input nt_input outdir
+	3. For tag2stop program
+		Rscript optimize_codon_tag2stop.R aa_input nt_input outdir
+	4. For tag2gln program
+		Rscript optimize_codon_tag2gln.R aa_input nt_input outdir
+		
+	where,
+	* aa_input: is an input file of targeted aa profiles, where each profile is written in a column.
+	* nt_input: is an input file of initial nt frequencies for each aa profile. Each of the initial nt is written in a column.
+	* outdir: output directory to save the optimized results.
