@@ -1,12 +1,10 @@
 # CodonAdjust
-========
 CodonAdjust is a free software to optimize a nucleotide composition mimicking a certain AA profile. CodonAdjust formulates the optimization of a nucleotide composition as a non-convex optimization problem which minimizes the squared error between the desired and the calculated AA profiles. We provide CodonAdjust with four different programs, which have various customization in practical scenarios such as selecting or avoiding specific codons.
 
 # Required Packages ############################
 * R 3.6.x
 * IPOPT  >=3.12
 * HSL
-
 
 # Install ######################################
 	1. Get IPOPT code from
