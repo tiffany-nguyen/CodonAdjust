@@ -33,7 +33,6 @@ CodonAdjust is a free software to optimize a nucleotide composition mimicking a 
 	5. Install IPOPT package to R
 		install.packages('~/path/to/Ipopt-3.12.13/build/Ipopt/contrib/RInterface', repos=NULL, type='source')
 
-	6. 
 # Usage
 	1. For allstop program
 		Rscript optimize_codon_allstop.R aa_input nt_input outdir
@@ -49,3 +48,7 @@ CodonAdjust is a free software to optimize a nucleotide composition mimicking a 
 	* nt_input: is an input file of initial nt frequencies for each aa profile. Each of the initial nt 
 	is written in a column.
 	* outdir: output directory to save the optimized results.
+	See "sample" folder for a sample of aa_input and nt_input.
+	
+# Support
+* Feel free to reach me at tiffany.nguyen[at]aist.go.jp
