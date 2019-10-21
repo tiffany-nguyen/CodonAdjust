@@ -66,6 +66,8 @@ CodonAdjust is a free software to optimize a nucleotide composition mimicking a 
 ## Example
 	Rscript optimize_codon_allstop.R sample/aa_input.csv sample/nt_input.csv allstop_output
 	Rscript optimize_codon_allstop.R sample/aa_input.csv sample/nt_input.csv 0.1 allstop_output
-	
+# Reference
+* Paper coming soon.
+
 # Support
 * If you have any questions regarding to CodonAdjust, please reach me at tiffany.nguyen[at]aist.go.jp
