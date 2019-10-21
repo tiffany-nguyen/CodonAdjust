@@ -32,21 +32,40 @@ CodonAdjust is a free software to optimize a nucleotide composition mimicking a 
 		install.packages('~/path/to/Ipopt-3.12.13/build/Ipopt/contrib/RInterface', repos=NULL, type='source')
 
 # Usage
-	1. For allstop program
+	1. Programs without control factor
+	* For allstop program
 		Rscript optimize_codon_allstop.R aa_input nt_input outdir
-	2. For nostop program
+	* For nostop program
 		Rscript optimize_codon_nostop.R aa_input nt_input outdir
-	3. For tag2stop program
+	* For tag2stop program
 		Rscript optimize_codon_tag2stop.R aa_input nt_input outdir
-	4. For tag2gln program
+	* For tag2gln program
 		Rscript optimize_codon_tag2gln.R aa_input nt_input outdir
+
+	2. Programs with control factor
+	* For allstop program
+		Rscript optimize_codon_allstop.R aa_input nt_input cf_val outdir
+	* For nostop program
+		Rscript optimize_codon_nostop.R aa_input nt_input cf_val outdir
+	* For tag2stop program
+		Rscript optimize_codon_tag2stop.R aa_input nt_input cf_val outdir
+	* For tag2gln program
+		Rscript optimize_codon_tag2gln.R aa_input nt_input cf_val outdir
+
 		
 	where,
-	* aa_input: is an input file of targeted aa profiles, where each profile is written in a column.
-	* nt_input: is an input file of initial nt frequencies for each aa profile. Each of the initial nt 
-	is written in a column.
-	* outdir: output directory to save the optimized results.
-	See "sample" folder for a sample of aa_input and nt_input.
+	* aa_input: input file of targeted amino acids profiles, where each profile is written in a column.
+	* nt_input: input file of initial nucleotide frequencies for each aa profile. Each of the initial 
+				nucleotide frequency is written in a column.
+	* cf_val  : control factor, which is used to guarantee a certain rate for all targeted amino acids.
+				This should be a positive number smaller than 1.0.
+	* outdir  : output directory to save the optimized results.
+	
+	See "sample" folder for an example of aa_input and nt_input.
+	
+## Example
+	Rscript optimize_codon_allstop.R sample/aa_input.csv sample/nt_input.csv allstop_output
+	Rscript optimize_codon_allstop.R sample/aa_input.csv sample/nt_input.csv 0.1 allstop_output
 	
 # Support
 * Feel free to reach me at tiffany.nguyen[at]aist.go.jp
