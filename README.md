@@ -56,9 +56,9 @@ CodonAdjust is a free software to optimize a nucleotide composition mimicking a 
 	where,
 	- aa_input: input file of targeted amino acids profiles, where each profile is written in a column.
 	- nt_input: input file of initial nucleotide frequencies for each aa profile. Each of the initial 
-				nucleotide frequency is written in a column.
+	nucleotide frequency is written in a column.
 	- cf_val  : control factor, which is used to guarantee a certain rate for all targeted amino acids.
-				This should be a positive number smaller than 1.0.
+	This should be a positive number smaller than 1.0.
 	- outdir  : output directory to save the optimized results.
 	
 	See "sample" folder for an example of aa_input and nt_input.
