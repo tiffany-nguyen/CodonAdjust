@@ -16,7 +16,7 @@ from mkdir_p import mkdir_p # library for command mkdir -p (create folder if not
 iupac_code = {"A","C","G","T","W","S","M","K","R","Y","B","D","H","V","N"}
 length = sys.argv[1]
 
-OUTPUT = "./iupac_nt_input/"
+OUTPUT = "./IUPAC_input/"
 mkdir_p(OUTPUT)
 
 #read csv
