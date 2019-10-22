@@ -32,40 +32,53 @@ CodonAdjust is a free software to optimize a nucleotide composition mimicking a 
 		install.packages('~/path/to/Ipopt-3.12.13/build/Ipopt/contrib/RInterface', repos=NULL, type='source')
 
 # Usage
-	1. Programs without control factor
-	- For allstop program
+## Programs without control factor
+	1. For allstop program
 		Rscript optimize_codon_allstop.R aa_input nt_input outdir
-	- For nostop program
+	2. For nostop program
 		Rscript optimize_codon_nostop.R aa_input nt_input outdir
-	- For tag2stop program
+	3. For tag2stop program
 		Rscript optimize_codon_tag2stop.R aa_input nt_input outdir
-	- For tag2gln program
+	4. For tag2gln program
 		Rscript optimize_codon_tag2gln.R aa_input nt_input outdir
 
-	2. Programs with control factor
-	- For allstop program
-		Rscript optimize_codon_allstop.R aa_input nt_input cf_val outdir
-	- For nostop program
-		Rscript optimize_codon_nostop.R aa_input nt_input cf_val outdir
-	- For tag2stop program
-		Rscript optimize_codon_tag2stop.R aa_input nt_input cf_val outdir
-	- For tag2gln program
-		Rscript optimize_codon_tag2gln.R aa_input nt_input cf_val outdir
-
-		
 	where,
 	- aa_input: input file of targeted amino acids profiles, where each profile is written in a column.
 	- nt_input: input file of initial nucleotide frequencies for each aa profile. Each of the initial 
 	nucleotide frequency is written in a column.
-	- cf_val  : control factor, which is used to guarantee a certain rate for all targeted amino acids.
-	This should be a positive number smaller than 1.0.
 	- outdir  : output directory to save the optimized results.
-	
+
 	See "sample" folder for an example of aa_input and nt_input.
 	
+## Programs with control factor
+	1. For allstop program
+		Rscript optimize_codon_allstop.R aa_input nt_input cf_val outdir
+	2. For nostop program
+		Rscript optimize_codon_nostop.R aa_input nt_input cf_val outdir
+	3. For tag2stop program
+		Rscript optimize_codon_tag2stop.R aa_input nt_input cf_val outdir
+	4. For tag2gln program
+		Rscript optimize_codon_tag2gln.R aa_input nt_input cf_val outdir
+		
+	where,
+	- cf_val  : control factor, which is used to guarantee a certain rate for all targeted amino acids.
+	This should be a positive number smaller than 1.0.
+	
+## Programs for IUPAC code
+* Prepare nucleotide input corresponding to all 3375 IUPAC codes.
+  python mk_iupac_nt_input.py len
+  where len is the number of amino acids in the input AA profile.
+  The script uses 3375 IUPAC codes in iupac_code.tar.gz as input.
+  The output will be stored in IUPAC_input folder.
+* Run optimize program over all 3375 nt input.
+  bash run_optimize_codon_iupac.sh aa_input outdir TYPE
+  where TYPE specifies the type of optimize programe to use. It should be "allstop", "nostop", "tag2stop", "tag2gln".
+	
 ## Example
-	Rscript optimize_codon_allstop.R sample/aa_input.csv sample/nt_input.csv allstop_output
-	Rscript optimize_codon_allstop.R sample/aa_input.csv sample/nt_input.csv 0.1 allstop_output
+* Rscript optimize_codon_allstop.R sample/aa_input.csv sample/nt_input.csv allstop_output
+* Rscript optimize_codon_allstop.R sample/aa_input.csv sample/nt_input.csv 0.1 allstop_output
+* bash run_optimize_codon_iupac.sh sample/aa_input.csv allstop_output allstop
+	
 # Reference
 * Paper coming soon.
 
