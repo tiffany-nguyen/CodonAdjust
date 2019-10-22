@@ -65,14 +65,14 @@ CodonAdjust is a free software to optimize a nucleotide composition mimicking a 
 	This should be a positive number smaller than 1.0.
 	
 ## Programs for IUPAC code
-* Prepare nucleotide input corresponding to all 3375 IUPAC codes.
-  python mk_iupac_nt_input.py len
-  where len is the number of amino acids in the input AA profile.
-  The script uses 3375 IUPAC codes in iupac_code.tar.gz as input.
-  The output will be stored in IUPAC_input folder.
-* Run optimize program over all 3375 nt input.
-  bash run_optimize_codon_iupac.sh aa_input outdir TYPE
-  where TYPE specifies the type of optimize programe to use. It should be "allstop", "nostop", "tag2stop", "tag2gln".
+	1. Prepare nucleotide input corresponding to all 3375 IUPAC codes
+		python mk_iupac_nt_input.py len
+	where len is the number of amino acids in the input AA profile.
+	The script uses 3375 IUPAC codes in iupac_code.tar.gz as input.
+	The output will be stored in IUPAC_input folder.
+	2. Run optimize program over all 3375 nt input
+		bash run_optimize_codon_iupac.sh aa_input outdir TYPE
+	where TYPE specifies the type of optimize programe to use. It should be "allstop", "nostop", "tag2stop", "tag2gln".
 	
 ## Example
 * Rscript optimize_codon_allstop.R sample/aa_input.csv sample/nt_input.csv allstop_output
