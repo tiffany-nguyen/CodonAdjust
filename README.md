@@ -71,9 +71,13 @@ CodonAdjust is a free software to optimize a nucleotide composition mimicking a 
 	The script uses 3375 IUPAC codes in iupac_code.tar.gz as input.
 	The output will be stored in IUPAC_input folder.
 	2. Run optimize program over all 3375 nt input
-		bash run_optimize_codon_iupac.sh aa_input outdir TYPE
-	where TYPE specifies the type of optimize programe to use. 
+		bash run_optimize_codon_iupac.sh aa_input nt_indir outdir TYPE
+	where,
+	- nt_indir: specifies directory of IUPAC codes. 
+	- TYPE:  specifies the type of optimize programe to use. 
 	It should be "allstop", "nostop", "tag2stop", "tag2gln".
+	
+	Optimization results for each IUPAC code will be output to a subfolder in the outdir with  IUPAC code as folder name.
 	
 ## Example
 * Rscript optimize_codon_allstop.R sample/aa_input.csv sample/nt_input.csv allstop_output
@@ -105,7 +109,7 @@ CodonAdjust is a free software to optimize a nucleotide composition mimicking a 
 		and output to this file.
 		
 # Reference
-* Paper coming soon.
+* T.D.N, Y.S, T.K, "CodonAdjust: a software for in silico design of a mutagenesis library with specific amino acid profiles", *submitted*.
 
 # Support
 * If you have any questions regarding to CodonAdjust, please reach me at tiffany.nguyen[at]aist.go.jp
