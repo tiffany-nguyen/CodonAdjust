@@ -559,7 +559,7 @@ thres = 10^(-15)
 
 ##############print out optimal nt frequency#######################
 nt_csv=paste(outdir, "/", "nt_opt.all.csv", sep = "")
-nt_revised=paste(outdir, "/", "nt_opt.all_revised.csv", sep = "")
+nt_rounded=paste(outdir, "/", "nt_opt.all_rounded.csv", sep = "")
 
 nt_mat <- matrix(output_nt_freq, nrow = col_num, byrow = TRUE)
 nt_mat <- t(nt_mat)
@@ -567,13 +567,13 @@ rownames(nt_mat) <- c("A1", "C1", "G1", "T1", "A2", "C2", "G2", "T2", "A3", "C3"
 write.table(nt_mat, file = nt_csv, sep = ",", col.names = FALSE, quote=FALSE)
 
 nt_mat[nt_mat <= thres] <- 0.0
-write.table(nt_mat, file = nt_revised, sep = ",", col.names = FALSE, quote=FALSE)
+write.table(nt_mat, file = nt_rounded, sep = ",", col.names = FALSE, quote=FALSE)
 ##############print out optimal nt frequency#######################
 
 
 ##############print out optimal aa frequency#######################
 aa_csv=paste(outdir, "/", "aa_opt.all.csv", sep = "")
-aa_revised=paste(outdir, "/", "aa_opt.all_revised.csv", sep = "")
+aa_rounded=paste(outdir, "/", "aa_opt.all_rounded.csv", sep = "")
 
 aa_mat <- matrix(output_aa_freq, nrow = col_num, byrow = TRUE)
 aa_mat <- t(aa_mat)
@@ -581,13 +581,13 @@ rownames(aa_mat) <- c("A", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N"
 write.table(aa_mat, file = aa_csv, sep = ",", col.names = FALSE, quote=FALSE)
 
 aa_mat[aa_mat <= thres] <- 0.0
-write.table(aa_mat, file = aa_revised, sep = ",", col.names = FALSE, quote=FALSE)
+write.table(aa_mat, file = aa_rounded, sep = ",", col.names = FALSE, quote=FALSE)
 ##############print out optimal aa frequency#######################
 
 
 ##############print out optimal MSE#######################
 MSE_csv=paste(outdir, "/", "MSE_opt.all.csv", sep = "")
-MSE_revised=paste(outdir, "/", "MSE_opt.all_revised.csv", sep = "")
+MSE_rounded=paste(outdir, "/", "MSE_opt.all_rounded.csv", sep = "")
 
 MSE_mat <- matrix(output_MSE_all, nrow = col_num, byrow = TRUE)
 MSE_mat <- t(MSE_mat)
@@ -596,7 +596,7 @@ rownames(MSE_mat) <- c("opt_MSE")
 write.table(MSE_mat, file=MSE_csv, sep = ",", col.names=FALSE, quote=FALSE)
 
 MSE_mat[MSE_mat <= thres] <- 0.0
-write.table(MSE_mat, file = MSE_revised, sep = ",", col.names = FALSE, quote=FALSE)
+write.table(MSE_mat, file = MSE_rounded, sep = ",", col.names = FALSE, quote=FALSE)
 ##############print out optimal MSE#######################
 
 
