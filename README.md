@@ -76,16 +76,15 @@ CodonAdjust is a free software to optimize a nucleotide composition mimicking a 
 	- nt_indir: specifies directory of IUPAC codes. 
 	- TYPE:  specifies the type of optimize programe to use. 
 	It should be "allstop", "nostop", "tag2stop", "tag2gln".
-	
-	Optimization results for each IUPAC code will be output to a subfolder in the outdir with  IUPAC code as folder name.
-	
+		
 ## Example
 * Rscript optimize_codon_allstop.R sample/aa_input.csv sample/nt_input.csv allstop_output
 * Rscript optimize_codon_allstop_cf.R sample/aa_input.csv sample/nt_input.csv 0.1 allstop_output
 * bash run_optimize_codon_iupac.sh sample/aa_input.csv allstop_output allstop
 
 ## Output sample
-* Below is an output sample when using optimize_codon_allstop.R.
+* Output for optimize_codon_*.R, and optimize_codon_*_cf.R.
+Below is an output sample when using optimize_codon_allstop.R
 ![output_sample](/img/CodonAdjust_output_sample.png)
 
 	- allstop.*n*.optimize.out:
@@ -107,6 +106,11 @@ CodonAdjust is a free software to optimize a nucleotide composition mimicking a 
 	- MSE_opt.all_rounded.csv:
 		Values smaller than a threshold of 10^(-15) in MSE_opt.all.csv are rounded to 0,
 		and output to this file.
+
+* Output for program with IUPAC code
+	Optimization results for each IUPAC code will be output to a subfolder in the outdir with  IUPAC code as folder name. The best IUPAC code for each input AA profile is searched from all 3,375 IUPAC codes, be output to the **BEST** folder in the outdir.
+	Below is a sample output for IUPAC code with allstop.
+	![iupac_sample](/img/CodonAdjust_iupac_sample.png)
 		
 # Reference
 * T.D.N, Y.S, T.K, "CodonAdjust: a software for in silico design of a mutagenesis library with specific amino acid profiles", *submitted*.
