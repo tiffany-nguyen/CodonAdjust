@@ -10,6 +10,10 @@ TYPE=$5     # type of optimize program. should be "allstop", "nostop", "tag2stop
 
 mkdir -p $outdir
 
+# get number of input AA profiles
+col_num=$(head -n 1 ${aa_input} | awk -F, '{print NF}')
+LEN=$((col_num - 1))
+
 for code1 in "${iupac[@]}"; do
     for code2 in "${iupac[@]}"; do
         for code3 in "${iupac[@]}"; do
@@ -21,3 +25,6 @@ for code1 in "${iupac[@]}"; do
         done
     done
 done
+
+# get best results from all IUPAC codes
+python get_best_iupac_codes.py ${outdir} ${LEN}
