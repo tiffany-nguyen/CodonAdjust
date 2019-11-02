@@ -52,13 +52,13 @@ CodonAdjust is a free software to optimize a nucleotide composition mimicking a 
 	
 ## Programs with control factor
 	1. For allstop program
-		Rscript optimize_codon_allstop.R aa_input nt_input cf_val outdir
+		Rscript optimize_codon_allstop_cf.R aa_input nt_input cf_val outdir
 	2. For nostop program
-		Rscript optimize_codon_nostop.R aa_input nt_input cf_val outdir
+		Rscript optimize_codon_nostop_cf.R aa_input nt_input cf_val outdir
 	3. For tag2stop program
-		Rscript optimize_codon_tag2stop.R aa_input nt_input cf_val outdir
+		Rscript optimize_codon_tag2stop_cf.R aa_input nt_input cf_val outdir
 	4. For tag2gln program
-		Rscript optimize_codon_tag2gln.R aa_input nt_input cf_val outdir
+		Rscript optimize_codon_tag2gln_cf.R aa_input nt_input cf_val outdir
 		
 	where,
 	- cf_val  : control factor, which is used to guarantee a certain rate for all targeted amino acids.
@@ -77,9 +77,33 @@ CodonAdjust is a free software to optimize a nucleotide composition mimicking a 
 	
 ## Example
 * Rscript optimize_codon_allstop.R sample/aa_input.csv sample/nt_input.csv allstop_output
-* Rscript optimize_codon_allstop.R sample/aa_input.csv sample/nt_input.csv 0.1 allstop_output
+* Rscript optimize_codon_allstop_cf.R sample/aa_input.csv sample/nt_input.csv 0.1 allstop_output
 * bash run_optimize_codon_iupac.sh sample/aa_input.csv allstop_output allstop
-	
+
+## Output sample
+* Below is an output sample when using optimize_codon_allstop.R.
+![output_sample](/img/CodonAdjust_output_sample.png)
+
+	- allstop.*n*.optimize.out:
+		Output the optimizing process & its results for input AA profile number *n*.
+	- MSE_init.all.csv:
+		MSE between initial AAs (calculated from nt_input) and the input AAs.
+	- nt_opt.all.csv:
+		Optimal nucleotide frequencies for all AA profiles.
+	- nt_opt.all_rounded.csv:
+		Values smaller than a threshold of 10^(-15) in nt_opt.all.csv are rounded to 0,
+		and output to this file.
+	- aa_opt.all.csv:
+		Optimal AAs calculated from the optimal nucleotide frequencies.
+	- aa_opt.all_rounded.csv:
+		Values smaller than a threshold of 10^(-15) in aa_opt.all.csv are rounded to 0,
+		and output to this file.
+	- MSE_opt.all.csv:
+		MSE between optimal AAs and the input AAs.
+	- MSE_opt.all_rounded.csv:
+		Values smaller than a threshold of 10^(-15) in MSE_opt.all.csv are rounded to 0,
+		and output to this file.
+		
 # Reference
 * Paper coming soon.
 
