@@ -1,5 +1,3 @@
-print("importing libraries...")
-
 import pandas as pd
 import numpy as np
 import csv
@@ -35,10 +33,11 @@ def find_best_matches():
     for code1 in IUPAC:
         for code2 in IUPAC:
             for code3 in IUPAC:
+
                 param = code1 + code2 + code3
                 curr_mse = INDIR + "/" + param + "/MSE_opt.all.csv"
                 df_mse = readcsv(curr_mse)
-
+                print("Processing " + param)
                 for i in range(LEN):
                     if best_mse[i] > df_mse.iloc[0, i]:
                         curr_aa = INDIR + "/" + param + "/aa_opt.all.csv"
@@ -66,7 +65,7 @@ def find_best_matches():
 
 
 def main():
-
+    print("Searching for the best optimization results...")
     find_best_matches()
     print("done")
 
