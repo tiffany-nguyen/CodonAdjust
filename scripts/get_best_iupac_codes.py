@@ -1,7 +1,11 @@
+print("importing libraries...")
+
 import pandas as pd
 import numpy as np
 import csv
 import sys
+import logging
+from logging import getLogger, StreamHandler, FileHandler, Formatter
 from mkdir_p import mkdir_p # library for command mkdir -p (create folder if not existed)
 
 INDIR = sys.argv[1]
@@ -24,6 +28,23 @@ best_aa = pd.DataFrame(np.zeros(shape = (20, LEN)))*1.0
 best_nt = pd.DataFrame(np.zeros(shape = (12, LEN)))*1.0
 # ----- initialize best results ------------
 
+# ----- initialize logger ------------
+logger = getLogger("IUPAC")
+logger.setLevel(logging.DEBUG)
+handler_format = Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+stream_handler = StreamHandler()
+stream_handler.setLevel(logging.DEBUG)
+stream_handler.setFormatter(handler_format)
+
+file_handler = FileHandler(OUTDIR + 'iupac.log', 'a')
+file_handler.setLevel(logging.DEBUG)
+file_handler.setFormatter(handler_format)
+
+logger.addHandler(stream_handler)
+logger.addHandler(file_handler)
+# ----- initialize logger ------------
+
 #read csv
 def readcsv(infile):
     df = pd.read_csv(infile, index_col = 0, header = None)
@@ -33,13 +54,13 @@ def find_best_matches():
     for code1 in IUPAC:
         for code2 in IUPAC:
             for code3 in IUPAC:
-
                 param = code1 + code2 + code3
                 curr_mse = INDIR + "/" + param + "/MSE_opt.all.csv"
                 df_mse = readcsv(curr_mse)
-                print("Processing " + param)
+
                 for i in range(LEN):
                     if best_mse[i] > df_mse.iloc[0, i]:
+                        logger.info("Found better IUPAC code for position %s. Current code: %s will be updated to new code %s.", str(i), best_code[i], param)
                         curr_aa = INDIR + "/" + param + "/aa_opt.all.csv"
                         curr_nt = INDIR + "/" + param + "/nt_opt.all.csv"
                         df_aa = readcsv(curr_aa)
@@ -65,9 +86,11 @@ def find_best_matches():
 
 
 def main():
-    print("Searching for the best optimization results...")
-    find_best_matches()
-    print("done")
+    try:
+        find_best_matches()
+        print("done")
+    except:
+        logger.error("Exception occurred.")
 
 if __name__ == '__main__':
     main()
