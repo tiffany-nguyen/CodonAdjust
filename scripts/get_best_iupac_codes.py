@@ -60,7 +60,7 @@ def find_best_matches():
 
                 for i in range(LEN):
                     if best_mse[i] > df_mse.iloc[0, i]:
-                        logger.info("Found better IUPAC code for position %s. Current code: %s will be updated to new code %s.", str(i), best_code[i], param)
+                        logger.info("Found better IUPAC code for position %s. Current code: %s will be updated to new code %s.", str(i+1), best_code[i], param)
                         curr_aa = INDIR + "/" + param + "/aa_opt.all.csv"
                         curr_nt = INDIR + "/" + param + "/nt_opt.all.csv"
                         df_aa = readcsv(curr_aa)
