@@ -93,17 +93,17 @@ Below is an output sample when using optimize_codon_allstop.R
 	- MSE_init.all.csv:
 		MSE between initial AAs (calculated from nt_input) and the input AAs.
 	- nt_opt.all.csv:
-		Optimal nucleotide frequencies for all AA profiles.
+		Optimized nucleotide frequencies for all AA profiles.
 	- nt_opt.all_rounded.csv:
 		Values smaller than a threshold of 10^(-15) in nt_opt.all.csv are rounded to 0,
 		and output to this file.
 	- aa_opt.all.csv:
-		Optimal AAs calculated from the optimal nucleotide frequencies.
+		Optimized AAs calculated from the optimized nucleotide frequencies.
 	- aa_opt.all_rounded.csv:
 		Values smaller than a threshold of 10^(-15) in aa_opt.all.csv are rounded to 0,
 		and output to this file.
 	- MSE_opt.all.csv:
-		MSE between optimal AAs and the input AAs.
+		MSE between optimized AAs and the input AAs.
 	- MSE_opt.all_rounded.csv:
 		Values smaller than a threshold of 10^(-15) in MSE_opt.all.csv are rounded to 0,
 		and output to this file.
