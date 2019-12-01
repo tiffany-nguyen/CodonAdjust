@@ -32,14 +32,14 @@ CodonAdjust is a free software to optimize a nucleotide composition mimicking a 
 		install.packages('~/path/to/Ipopt-3.12.13/build/Ipopt/contrib/RInterface', repos=NULL, type='source')
 
 # Usage
-## Programs without control factor
-	1. For allstop program
+## Options without control factor
+	1. For allstop option
 		Rscript optimize_codon_allstop.R aa_input nt_input outdir
-	2. For nostop program
+	2. For nostop option
 		Rscript optimize_codon_nostop.R aa_input nt_input outdir
-	3. For tag2stop program
+	3. For tag2stop option
 		Rscript optimize_codon_tag2stop.R aa_input nt_input outdir
-	4. For tag2gln program
+	4. For tag2gln option
 		Rscript optimize_codon_tag2gln.R aa_input nt_input outdir
 
 	where,
@@ -50,14 +50,14 @@ CodonAdjust is a free software to optimize a nucleotide composition mimicking a 
 
 	See "sample" folder for an example of aa_input and nt_input.
 	
-## Programs with control factor
-	1. For allstop program
+## options with control factor
+	1. For allstop option
 		Rscript optimize_codon_allstop_cf.R aa_input nt_input cf_val outdir
-	2. For nostop program
+	2. For nostop option
 		Rscript optimize_codon_nostop_cf.R aa_input nt_input cf_val outdir
-	3. For tag2stop program
+	3. For tag2stop option
 		Rscript optimize_codon_tag2stop_cf.R aa_input nt_input cf_val outdir
-	4. For tag2gln program
+	4. For tag2gln option
 		Rscript optimize_codon_tag2gln_cf.R aa_input nt_input cf_val outdir
 		
 	where,
@@ -74,7 +74,7 @@ CodonAdjust is a free software to optimize a nucleotide composition mimicking a 
 		bash run_optimize_codon_iupac.sh aa_input nt_indir outdir TYPE
 	where,
 	- nt_indir: specifies directory of IUPAC codes. 
-	- TYPE:  specifies the type of optimize programe to use. 
+	- TYPE:  specifies the type of optimize option to use. 
 	It should be "allstop", "nostop", "tag2stop", "tag2gln".
 		
 ## Example
