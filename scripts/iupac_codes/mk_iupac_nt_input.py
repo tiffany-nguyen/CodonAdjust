@@ -7,6 +7,7 @@
 # Created:     10/11/2019
 # Copyright:   (c) Tiffany 2019
 #-------------------------------------------------------------------------------
+print("importing libraries ...")
 import pandas as pd
 import numpy as np
 import csv
