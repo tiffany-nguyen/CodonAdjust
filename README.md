@@ -83,13 +83,13 @@ CodonAdjust is a free software to optimize a nucleotide composition mimicking a 
 * bash run_optimize_codon_iupac.sh sample/aa_input.csv allstop_output allstop
 
 ## Output sample
-* Output for optimize_codon_*.R, and optimize_codon_*_cf.R
+* Output for optimize_codon_*option*.R, and optimize_codon_*option*_cf.R
 
 Below is an output sample when using optimize_codon_allstop.R
 ![output_sample](/img/CodonAdjust_output_sample.png)
 
-	- allstop.*n*.optimize.out:
-		Output the optimizing process & its results for input AA profile number *n*.
+	- allstop.n.optimize.out:
+		Output the optimizing process & its results for input AA profile number n.
 	- MSE_init.all.csv:
 		MSE between initial AAs (calculated from nt_input) and the input AAs.
 	- nt_opt.all.csv:
@@ -108,7 +108,7 @@ Below is an output sample when using optimize_codon_allstop.R
 		Values smaller than a threshold of 10^(-15) in MSE_opt.all.csv are rounded to 0,
 		and output to this file.
 
-* Output for program with IUPAC code
+* Output for option with IUPAC code
 
 	Optimization results for each IUPAC code will be output to a subfolder in the outdir with  IUPAC code as folder name. The best IUPAC code for each input AA profile is searched from all 3,375 IUPAC codes, be output to the **BEST** folder in the outdir.
 
