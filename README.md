@@ -33,13 +33,13 @@ CodonAdjust is a free software to optimize a nucleotide composition mimicking a 
 
 # Usage
 ## Options without control factor
-	1. For allstop option
+	1. For *allstop* option
 		Rscript optimize_codon_allstop.R aa_input nt_input outdir
-	2. For nostop option
+	2. For *nostop* option
 		Rscript optimize_codon_nostop.R aa_input nt_input outdir
-	3. For tag2stop option
+	3. For *tag2stop* option
 		Rscript optimize_codon_tag2stop.R aa_input nt_input outdir
-	4. For tag2gln option
+	4. For *tag2gln* option
 		Rscript optimize_codon_tag2gln.R aa_input nt_input outdir
 
 	where,
@@ -51,20 +51,20 @@ CodonAdjust is a free software to optimize a nucleotide composition mimicking a 
 	See "sample" folder for an example of aa_input and nt_input.
 	
 ## options with control factor
-	1. For allstop option
+	1. For *allstop* option
 		Rscript optimize_codon_allstop_cf.R aa_input nt_input cf_val outdir
-	2. For nostop option
+	2. For *nostop* option
 		Rscript optimize_codon_nostop_cf.R aa_input nt_input cf_val outdir
-	3. For tag2stop option
+	3. For *tag2stop* option
 		Rscript optimize_codon_tag2stop_cf.R aa_input nt_input cf_val outdir
-	4. For tag2gln option
+	4. For *tag2gln* option
 		Rscript optimize_codon_tag2gln_cf.R aa_input nt_input cf_val outdir
 		
 	where,
 	- cf_val  : control factor, which is used to guarantee a certain rate for all targeted amino acids.
 	This should be a positive number smaller than 1.0.
 	
-## Programs for IUPAC code
+## Option for global optimization search
 	1. Prepare nucleotide input corresponding to all 3375 IUPAC codes
 		python mk_iupac_nt_input.py len
 	where len is the number of amino acids in the input AA profile.
@@ -75,7 +75,7 @@ CodonAdjust is a free software to optimize a nucleotide composition mimicking a 
 	where,
 	- nt_indir: specifies directory of IUPAC codes. 
 	- TYPE:  specifies the type of optimize option to use. 
-	It should be "allstop", "nostop", "tag2stop", "tag2gln".
+	It should be *allstop*, *nostop*, *tag2stop*, *tag2gln*.
 		
 ## Example
 * Rscript optimize_codon_allstop.R sample/aa_input.csv sample/nt_input.csv allstop_output
