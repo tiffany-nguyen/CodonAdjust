@@ -65,23 +65,24 @@ CodonAdjust is a free software to optimize a nucleotide composition mimicking a 
 	This should be a positive number smaller than 1.0.
 	
 ## Option for global optimization search
-	1. Prepare nucleotide input corresponding to all 3375 IUPAC codes
+	1. Move to scripts/iupac_codes folder, and run below command to prepare nucleotide input 
+	corresponding to all 3375 IUPAC codes.
 		python mk_iupac_nt_input.py len
 	where len is the number of amino acids in the input AA profile.
 	The script uses 3375 IUPAC codes in iupac_code.tar.gz as input.
 	Use tar -xzvf iupac_code.tar.gz to decompress this file before running python script.
 	The output will be stored in IUPAC_input folder.
-	2. Run optimize program over all 3375 nt input
+	2. Run optimize program in the scripts folder to find global optimization.
 		bash run_optimize_codon_iupac.sh aa_input nt_indir outdir TYPE
 	where,
-	- nt_indir: specifies directory of IUPAC codes. 
+	- nt_indir: specifies path to the IUPAC_input folder generated in step 1. 
 	- TYPE:  specifies the type of optimize option to use. 
 	It should be "allstop", "nostop", "tag2stop", "tag2gln".
 		
 ## Example
 * Rscript optimize_codon_allstop.R sample/aa_input.csv sample/nt_input.csv allstop_output
 * Rscript optimize_codon_allstop_cf.R sample/aa_input.csv sample/nt_input.csv 0.1 allstop_output
-* bash run_optimize_codon_iupac.sh sample/aa_input.csv allstop_output allstop
+* bash run_optimize_codon_iupac.sh sample/aa_input.csv iupac_codes/IUPAC_input allstop
 
 ## Output sample
 * Output for optimize_codon_*option*.R, and optimize_codon_*option*_cf.R
