@@ -33,13 +33,13 @@ CodonAdjust is a free software to optimize a nucleotide composition mimicking a 
 
 # Usage
 ## Options without control factor
-	1. For _allstop_ option
+	1. For "allstop" option
 		Rscript optimize_codon_allstop.R aa_input nt_input outdir
-	2. For _nostop_ option
+	2. For "nostop" option
 		Rscript optimize_codon_nostop.R aa_input nt_input outdir
-	3. For _tag2stop_ option
+	3. For "tag2stop" option
 		Rscript optimize_codon_tag2stop.R aa_input nt_input outdir
-	4. For _tag2gln_ option
+	4. For "tag2gln" option
 		Rscript optimize_codon_tag2gln.R aa_input nt_input outdir
 
 	where,
@@ -51,13 +51,13 @@ CodonAdjust is a free software to optimize a nucleotide composition mimicking a 
 	See "sample" folder for an example of aa_input and nt_input.
 	
 ## Options with control factor
-	1. For _allstop_ option
+	1. For "allstop" option
 		Rscript optimize_codon_allstop_cf.R aa_input nt_input cf_val outdir
-	2. For _nostop_ option
+	2. For "nostop" option
 		Rscript optimize_codon_nostop_cf.R aa_input nt_input cf_val outdir
-	3. For _tag2stop_ option
+	3. For "tag2stop" option
 		Rscript optimize_codon_tag2stop_cf.R aa_input nt_input cf_val outdir
-	4. For _tag2gln_ option
+	4. For "tag2gln" option
 		Rscript optimize_codon_tag2gln_cf.R aa_input nt_input cf_val outdir
 		
 	where,
@@ -75,7 +75,7 @@ CodonAdjust is a free software to optimize a nucleotide composition mimicking a 
 	where,
 	- nt_indir: specifies directory of IUPAC codes. 
 	- TYPE:  specifies the type of optimize option to use. 
-	It should be _allstop_, _nostop_, _tag2stop_, _tag2gln_.
+	It should be "allstop", "nostop", "tag2stop", "tag2gln".
 		
 ## Example
 * Rscript optimize_codon_allstop.R sample/aa_input.csv sample/nt_input.csv allstop_output
