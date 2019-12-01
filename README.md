@@ -69,6 +69,7 @@ CodonAdjust is a free software to optimize a nucleotide composition mimicking a 
 		python mk_iupac_nt_input.py len
 	where len is the number of amino acids in the input AA profile.
 	The script uses 3375 IUPAC codes in iupac_code.tar.gz as input.
+	Use tar -xzvf iupac_code.tar.gz to decompress this file before running python script.
 	The output will be stored in IUPAC_input folder.
 	2. Run optimize program over all 3375 nt input
 		bash run_optimize_codon_iupac.sh aa_input nt_indir outdir TYPE
