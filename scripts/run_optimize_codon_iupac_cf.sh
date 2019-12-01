@@ -6,7 +6,7 @@ aa_input=$1 # input file for aa profiles
 nt_indir=$2 # input directory for IUPAC initial nt frequencies
 cf_val=$3   # control factor (0 < cf_val < 1)
 outdir=$4   # output directory
-TYPE=$5     # type of optimize program. should be "allstop", "nostop", "tag2stop", "tag2gln"
+TYPE=$5     # type of optimize option. should be "allstop", "nostop", "tag2stop", "tag2gln"
 
 mkdir -p $outdir
 
