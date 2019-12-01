@@ -5,7 +5,7 @@ declare -a iupac=("A" "C" "G" "T" "W" "S" "M" "K" "R" "Y" "B" "D" "H" "V" "N")
 aa_input=$1 # input file for aa profiles
 nt_indir=$2 # input directory for IUPAC initial nt frequencies
 outdir=$3   # output directory
-TYPE=$4     # type of optimize program. should be "allstop", "nostop", "tag2stop", "tag2gln"
+TYPE=$4     # type of optimize option. should be "allstop", "nostop", "tag2stop", "tag2gln"
 
 mkdir -p $outdir
 
