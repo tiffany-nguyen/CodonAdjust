@@ -63,6 +63,7 @@ CodonAdjust is a free software to optimize a nucleotide composition mimicking a 
 	where,
 	- cf_val  : control factor, which is used to guarantee a certain rate for all targeted amino acids.
 	This should be a positive number smaller than 1.0.
+	- other parameters (aa_input, nt_input, outdir): described in "Options without control factor"
 	
 ## Option for global optimization search
 	1. Move to scripts/iupac_codes folder, and run below command to prepare nucleotide input 
@@ -78,6 +79,7 @@ CodonAdjust is a free software to optimize a nucleotide composition mimicking a 
 	- nt_indir: specifies path to the IUPAC_input folder generated in step 1. 
 	- TYPE:  specifies the type of optimize option to use. 
 	It should be "allstop", "nostop", "tag2stop", "tag2gln".
+	- other parameters (aa_input, nt_input, outdir): described in "Options without control factor"
 		
 ## Example
 * Rscript optimize_codon_allstop.R sample/aa_input.csv sample/nt_input.csv allstop_output
@@ -119,6 +121,3 @@ Below is an output sample when using optimize_codon_allstop.R
 		
 # Reference
 * T.D.N, Y.S, T.K, "CodonAdjust: a software for in silico design of a mutagenesis library with specific amino acid profiles", *submitted*.
-
-# Support
-* If you have any questions regarding to CodonAdjust, please reach me at tiffany.nguyen[at]aist.go.jp
