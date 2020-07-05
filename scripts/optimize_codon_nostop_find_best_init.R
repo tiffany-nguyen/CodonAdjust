@@ -20,9 +20,12 @@ library(ipoptr)
 # beta_init:
 # initial values of beta at the beginning of optimization.
 # use uniform nucleotide frequencies.
+#beta_init <- rep(0.25, 12)
+# alternatively, use the values calculated by Nguyen-san's procedure
+#beta_init <- c(0,0,0.2348,0.7652,0.06,0.1748,0.6126,0.1526,0.210866667,0.394566667,0,0.394566667)
 
 # beta_lb, beta_ub:
-# lower and upper bounds of beta.
+# lower and upper bounds of beta
 beta_lb <- rep(0.0, 12)
 beta_ub <- rep(1.0, 12)
 
@@ -37,12 +40,11 @@ beta_ub <- rep(1.0, 12)
 # i.e. 
 # AAA(i=1), AAC(i=2), AAG(i=3), ..., TTT(i=64)
 # *(j=0), A(j=1), C(j=2), D(j=3), ..., Y(j=20)
-# amber stop codon TAG(i=51) is translated into Q(j=14)
-Tr <- c(9,12,9,12,17,17,17,17,15,16,15,16,8,8,11,8,14,7,14,7,13,13,13,13,15,15,15,15,10,10,10,10,4,3,4,3,1,1,1,1,6,6,6,6,18,18,18,18,0,20,14,20,16,16,16,16,0,2,19,2,10,5,10,5)
+Tr <- c(9,12,9,12,17,17,17,17,15,16,15,16,8,8,11,8,14,7,14,7,13,13,13,13,15,15,15,15,10,10,10,10,4,3,4,3,1,1,1,1,6,6,6,6,18,18,18,18,0,20,0,20,16,16,16,16,0,2,19,2,10,5,10,5)
 
 # Pa:
-# AA frequencies in a machine-learning predction list.
-# represented as a 20-dimensional vector.
+# AA frequencies in a machine-learning predction list
+# represented as a 20-dimensional vector
 # these are used as parameters during optimization.
 #
 # Pa[i]
@@ -53,24 +55,14 @@ Tr <- c(9,12,9,12,17,17,17,17,15,16,15,16,8,8,11,8,14,7,14,7,13,13,13,13,15,15,1
 #Pa <- c(1748,6126,600,0,0,0,0,0,0,1526,0,0,0,0,0,0,0,0,0,0)
 #Pa <- Pa / sum(Pa)
 
-# Cf:
-# coefficients for the lower bounds of AA frequencies.
-# represented as a 20-dimensional vector.
-# these are used as parameters during optimization.
-# 
-# make lower bounds such that 
-# Pa_calc[i] - Cf[i] * Pa[i] > 0
-#Cf <- rep(0.01, 20)
-
-# therefore, the parameter vector has 64+20+20=104 dimension in total.
-#params <- c(Tr, Pa, Cf)
+# therefore, the parameter vector has 64+20=84 dimension in total.
+#params <- c(Tr, Pa)
 
 
 # objective function
 eval_f <- function(beta, params) {
   Tr <- params[1:64]
   Pa <- params[65:84]
-  Cf <- params[85:104]
   Pa_calc <- rep(0.0, 20)
 
   for (b1 in 1:4) {
@@ -92,7 +84,6 @@ eval_f <- function(beta, params) {
 eval_grad_f <- function(beta, params) {
   Tr <- params[1:64]
   Pa <- params[65:84]
-  Cf <- params[85:104]
   Pa_calc <- rep(0.0, 20)
 
   for (b1 in 1:4) {
@@ -155,116 +146,30 @@ eval_grad_f <- function(beta, params) {
 
 # constraint
 eval_g <- function(beta, params) {
-  Tr <- params[1:64]
-  Pa <- params[65:84]
-  Cf <- params[85:104]
-  Pa_calc <- rep(0.0, 20)
-
-  for (b1 in 1:4) {
-    for (b2 in 1:4) {
-      for (b3 in 1:4) {
-        i <- 16*(b1-1) + 4*(b2-1) + b3
-        if (Tr[i] == 0) next
-        Pa_calc[Tr[i]] <- Pa_calc[Tr[i]] + beta[b1]*beta[4+b2]*beta[8+b3]
-      }
-    }
-  }
-
   return( c(beta[1] + beta[2]  + beta[3]  + beta[4], 
             beta[5] + beta[6]  + beta[7]  + beta[8],
             beta[9] + beta[10] + beta[11] + beta[12],
-            Pa_calc - Cf * Pa,
-            beta[4] * (beta[5] + beta[7]) * beta[9]) )
+            beta[4] * (beta[5]*beta[9] + beta[7]*beta[9] + beta[5]*beta[11])) )
 }
 
 # lower and upper bounds of constraints
-constraint_lb <- c(1.0, 1.0, 1.0, rep(0.0, 20), 0.0)
-constraint_ub <- c(1.0, 1.0, 1.0, rep(1.0, 20), 0.0)
-
+constraint_lb <- c(1.0, 1.0, 1.0, 0.0)
+constraint_ub <- c(1.0, 1.0, 1.0, 0.0)
 
 # Jacobian of constraint
-eval_jac_g_structure1 <- list( c(1,2,3,4), 
-                               c(5,6,7,8), 
-                               c(9,10,11,12) )
-eval_jac_g_structure2 <- vector("list", 20)
-for (i in 1:20) {
-  eval_jac_g_structure2[[i]] <- vector()
-}
-for (b1 in 1:4) {
-  for (b2 in 1:4) {
-    for (b3 in 1:4) {
-      i <- 16*(b1-1) + 4*(b2-1) + b3
-      if (Tr[i] == 0) next
-      eval_jac_g_structure2[[Tr[i]]] <- c(eval_jac_g_structure2[[Tr[i]]], b1, 4+b2, 8+b3)
-    }
-  }
-}
-for (i in 1:20) {
-  eval_jac_g_structure2[[i]] <- unique(sort(eval_jac_g_structure2[[i]]))
-}
-eval_jac_g_structure3 <- list( c(4,5,7,9) )
-eval_jac_g_structure <- c(eval_jac_g_structure1, eval_jac_g_structure2, eval_jac_g_structure3)
-
+eval_jac_g_structure <- list( c(1,2,3,4), 
+                              c(5,6,7,8), 
+                              c(9,10,11,12), 
+                              c(4,5,7,9,11) )
 eval_jac_g <- function(beta, params) {
-  Tr <- params[1:64]
-  Pa <- params[65:84]
-  Cf <- params[85:104]
-
-  d <- matrix(NA, nrow=12, ncol=20)
-
-  for (b1 in 1:4) {
-    for (b2 in 1:4) {
-      for (b3 in 1:4) {
-        i <- 16*(b1-1) + 4*(b2-1) + b3
-        if (Tr[i] == 0) next
-        if (is.na(d[b1, Tr[i]])) {
-          d[b1, Tr[i]] <- 0.0
-        }
-	d[b1, Tr[i]] <- d[b1, Tr[i]] + beta[4+b2]*beta[8+b3]
-      }
-    }
-  }
-
-  for (b2 in 1:4) {
-    for (b1 in 1:4) {
-      for (b3 in 1:4) {
-        i <- 16*(b1-1) + 4*(b2-1) + b3
-        if (Tr[i] == 0) next
-        if (is.na(d[4+b2, Tr[i]])) {
-          d[4+b2, Tr[i]] <- 0.0
-        }
-	d[4+b2, Tr[i]] <- d[4+b2, Tr[i]] + beta[b1]*beta[8+b3]
-      }
-    }
-  }
-
-  for (b3 in 1:4) {
-    for (b1 in 1:4) {
-      for (b2 in 1:4) {
-        i <- 16*(b1-1) + 4*(b2-1) + b3
-        if (Tr[i] == 0) next
-        if (is.na(d[8+b3, Tr[i]])) {
-          d[8+b3, Tr[i]] <- 0.0
-        }
-	d[8+b3, Tr[i]] <- d[8+b3, Tr[i]] + beta[b1]*beta[4+b2]
-      }
-    }
-  }
-
-  jac <- c( rep(1.0, 4),
-            rep(1.0, 4),
-            rep(1.0, 4) )
-  for (i in 1:20) {
-    v <- d[,i]
-    jac <- c(jac, v[!is.na(v)])
-  }
-  jac <- c( jac, 
-            (beta[5]+beta[7])*beta[9], 
-            beta[4]*beta[9], 
-            beta[4]*beta[9], 
-            beta[4]*(beta[5]+beta[7]) )
-
-  return(jac)
+  return( c( rep(1.0, 4), 
+             rep(1.0, 4),
+             rep(1.0, 4),
+             beta[5]*beta[9] + beta[7]*beta[9] + beta[5]*beta[11],
+             beta[4]*beta[9] + beta[4]*beta[11],
+	     beta[4]*beta[9],
+             beta[4]*beta[5] + beta[4]*beta[7],
+             beta[4]*beta[5] ) )
 }
 
 
@@ -284,7 +189,6 @@ eval_h_structure <- list( c(1),
 eval_h <- function(beta, obj_factor, hessian_lambda, params) {
   Tr <- params[1:64]
   Pa <- params[65:84]
-  Cf <- params[85:104]
   Pa_calc <- rep(0.0, 20)
 
   for (b1 in 1:4) {
@@ -421,66 +325,29 @@ eval_h <- function(beta, obj_factor, hessian_lambda, params) {
     }
   }
 
-# terms for constraints 1-3
-# beta[1] + beta[2]  + beta[3]  + beta[4] 
-# beta[5] + beta[6]  + beta[7]  + beta[8]
-# beta[9] + beta[10] + beta[11] + beta[12]
-
-# terms for constraints 4-23
-# Pa_calc - Cf * Pa
-  for (b1 in 1:4) {
-    for (b2 in 1:4) {
-      cdx <- b1
-      rdx <- 4+b2
-      for (b3 in 1:4) {
-        i <- 16*(b1-1) + 4*(b2-1) + b3
-        if (Tr[i] == 0) next
-        hess[cdx + rdx*(rdx-1)/2] <- hess[cdx + rdx*(rdx-1)/2] + hessian_lambda[3+Tr[i]] * beta[8+b3]
-      }
-    }
-  }
-
-  for (b1 in 1:4) {
-    for (b3 in 1:4) {
-      cdx <- b1
-      rdx <- 8+b3
-      for (b2 in 1:4) {
-        i <- 16*(b1-1) + 4*(b2-1) + b3
-        if (Tr[i] == 0) next
-        hess[cdx + rdx*(rdx-1)/2] <- hess[cdx + rdx*(rdx-1)/2] + hessian_lambda[3+Tr[i]] * beta[4+b2]
-      }
-    }
-  }
-
-  for (b2 in 1:4) {
-    for (b3 in 1:4) {
-      cdx <- 4+b2
-      rdx <- 8+b3
-      for (b1 in 1:4) {
-        i <- 16*(b1-1) + 4*(b2-1) + b3
-        if (Tr[i] == 0) next
-        hess[cdx + rdx*(rdx-1)/2] <- hess[cdx + rdx*(rdx-1)/2] + hessian_lambda[3+Tr[i]] * beta[b1]
-      }
-    }
-  }
-
-# terms for constraint 24
-# beta[4] * (beta[5] + beta[7]) * beta[9]
+# terms for constraint 4
+# beta[4] * (beta[5]*beta[9] + beta[7]*beta[9] + beta[5]*beta[11])
   cdx <- 4
   rdx <- 5
-  hess[cdx + rdx*(rdx-1)/2] <- hess[cdx + rdx*(rdx-1)/2] + hessian_lambda[24] * beta[9]
+  hess[cdx + rdx*(rdx-1)/2] <- hess[cdx + rdx*(rdx-1)/2] + hessian_lambda[4] * (beta[9] + beta[11])
   cdx <- 4
   rdx <- 7
-  hess[cdx + rdx*(rdx-1)/2] <- hess[cdx + rdx*(rdx-1)/2] + hessian_lambda[24] * beta[9]
+  hess[cdx + rdx*(rdx-1)/2] <- hess[cdx + rdx*(rdx-1)/2] + hessian_lambda[4] * beta[9]
   cdx <- 4
   rdx <- 9
-  hess[cdx + rdx*(rdx-1)/2] <- hess[cdx + rdx*(rdx-1)/2] + hessian_lambda[24] * (beta[5] + beta[7])
+  hess[cdx + rdx*(rdx-1)/2] <- hess[cdx + rdx*(rdx-1)/2] + hessian_lambda[4] * (beta[5] + beta[7])
+  cdx <- 4
+  rdx <- 11
+  hess[cdx + rdx*(rdx-1)/2] <- hess[cdx + rdx*(rdx-1)/2] + hessian_lambda[4] * beta[5]
   cdx <- 5
   rdx <- 9
-  hess[cdx + rdx*(rdx-1)/2] <- hess[cdx + rdx*(rdx-1)/2] + hessian_lambda[24] * beta[4]
+  hess[cdx + rdx*(rdx-1)/2] <- hess[cdx + rdx*(rdx-1)/2] + hessian_lambda[4] * beta[4]
+  cdx <- 5
+  rdx <- 11
+  hess[cdx + rdx*(rdx-1)/2] <- hess[cdx + rdx*(rdx-1)/2] + hessian_lambda[4] * beta[4]
   cdx <- 7
   rdx <- 9
-  hess[cdx + rdx*(rdx-1)/2] <- hess[cdx + rdx*(rdx-1)/2] + hessian_lambda[24] * beta[4]
+  hess[cdx + rdx*(rdx-1)/2] <- hess[cdx + rdx*(rdx-1)/2] + hessian_lambda[4] * beta[4]
 
   return(hess)
 }
@@ -495,6 +362,16 @@ read_f <- function(nt_file, aa_file) {
   nt_data <- read.csv(file=nt_file, header=FALSE)
   aa_data <- read.csv(file=aa_file, header=FALSE)
   return(list("nt_data" = nt_data, "aa_data" = aa_data))
+}
+
+read_nt <- function(nt_file) {
+  nt_data <- read.csv(file=nt_file, header=FALSE)
+  return(list("nt_data" = nt_data))
+}
+
+read_aa <- function(aa_file) {
+  aa_data <- read.csv(file=aa_file, header=FALSE)
+  return(list("aa_data" = aa_data))
 }
 
 calc_opt_f <- function(beta, Tr) {
@@ -514,48 +391,90 @@ calc_opt_f <- function(beta, Tr) {
   rownames(m_Pa_calc) <- c("A", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "P", "Q", "R", "S", "T", "V", "W", "Y")
   return(m_Pa_calc)
 }
+
 # read input data
 args <- commandArgs(trailingOnly = TRUE)
-aa_input = args[1] # input of AA profiles
-nt_input = args[2] # initial nt frequencies
-cf_val = args[3]   # control factor value
-outdir = args[4]   # output directory
-ths = as.numeric(args[5]) # specify threshold for rounding. This should be a positive integer
+aa_input = args[1]
+iupac_dir = args[2]
+outdir = args[3]
+ths = as.numeric(args[4]) # specify threshold for rounding. This should be a positive integer
 
-input_data = read_f(nt_input, aa_input)
+nt_dir = paste(iupac_dir, "/nt_", sep="")
+iupac = c("A", "C", "G", "T", "W", "S", "M", "K", "R", "Y", "B", "D", "H", "V", "N")
 
-# get number of column (number of aa profiles), and number of row of aa input file
-col_num <- ncol(input_data$nt_data)
-row_num <- nrow(input_data$aa_data) # this should be 20
+aa_input_data = read_aa(aa_input)
+row_num <- nrow(aa_input_data$aa_data) # this should be 20
+col_num <- 14 # both NnB and TCR have 14 profiles
 
+best_init_iupac_MSE  = rep(1, col_num)
+best_init_iupac_code = rep("", col_num)
+
+
+###### identify iupac codes which have best init MSE #########
+for (code1 in iupac) {
+    for (code2 in iupac) {
+    	for (code3 in iupac) {
+	    param = paste(code1, code2, code3, sep = "")
+	    print(param)
+	    nt_input = paste(nt_dir, param, ".csv", sep = "")
+	    nt_input_data = read_nt(nt_input) 
+	    for (i in 1:col_num) {
+	        beta_init <- t(nt_input_data$nt_data[, i])
+		Pa <- t(aa_input_data$aa_data[, (i+1)])
+    		Pa <- Pa / sum(Pa)
+    		params <- c(Tr, Pa)
+
+		# updating best init MSE
+		tmp_MSE = eval_f(beta_init, params)/row_num
+		#print("current MSE: ")
+		#print(tmp_MSE)
+    		if (tmp_MSE < best_init_iupac_MSE[i] ) {
+		   best_init_iupac_MSE[i] = tmp_MSE
+		   best_init_iupac_code[i] = param
+		}
+	    }      
+	}
+    }
+}
+
+###### run CodonAdjust with the above iupac codes ########
+# initialize the output
 # initialize the output
 output_nt_freq = c() # optimal nt frequency
+output_nt_init = c() # init nt frequency
 output_aa_freq = c() # optimal aa frequency
+output_aa_init = c() # init aa frequency
 output_MSE_all = c() # optimal MSE
 output_MSE_init = c() # initial MSE
 
 output_nt_freq_rounded = c() # rounded optimal nt frequency
 output_aa_freq_rounded = c() # rounded optimal aa frequency
+output_nt_init_rounded = c() # rounded init nt frequency
+output_aa_init_rounded = c() # rounded init aa frequency
 output_MSE_all_rounded = c() # rounded optimal MSE
 
 largest_deviations = c() # largest deviations of aa profile
 largest_deviations_rounded = c() # largest deviations of rounded aa profile
 
+largest_deviations_init = c() # largest deviations of aa profile with init
+largest_deviations_init_rounded = c() # largest deviations of rounded aa profile with init
+
 # create output directory if not exists
 dir.create(file.path(outdir), showWarnings = FALSE)
 
 for (i in 1:col_num) {
-    beta_init <- t(input_data$nt_data[, i])
-    Pa <- t(input_data$aa_data[, (i+1)])
+    nt_input = paste(nt_dir, best_init_iupac_code[i], ".csv", sep = "")
+    nt_input_data = read_nt(nt_input) 
+    beta_init <- t(nt_input_data$nt_data[, i])
+    Pa <- t(aa_input_data$aa_data[, (i+1)])
     Pa <- Pa / sum(Pa)
-
-    Cf <- rep(as.numeric(cf_val), 20)
-    params <- c(Tr, Pa, Cf)
+    params <- c(Tr, Pa)
 
     tmp_MSE <- eval_f(beta_init, params)
     if (tmp_MSE == 0) next
+    init_aa <- calc_opt_f(beta_init, Tr)
 
-    outfile=paste(outdir, "/tag2gln", ".", i, ".optimize.out", sep = "")
+    outfile=paste(outdir, "/nostop", ".", i, ".optimize.out", sep = "")
 
     opts <- list("print_level"=5,
                 "file_print_level"=5,
@@ -577,26 +496,45 @@ for (i in 1:col_num) {
                    opts=opts,
                    params=params)
 
+
     # process optimal results
     beta_opt <- res$solution
     f_opt <- calc_opt_f(beta_opt, Tr)
+
     aimed_aa <- params[65:84]
     max_dev <- max(abs(f_opt - aimed_aa))
+    max_dev_init <- max(abs(init_aa - aimed_aa))
 
     largest_deviations = c(largest_deviations, max_dev)
+    largest_deviations_init = c(largest_deviations_init, max_dev_init)
+
     output_nt_freq = c(output_nt_freq, beta_opt)
     output_aa_freq = c(output_aa_freq, f_opt)
+
+    output_nt_init = c(output_nt_init, beta_init)
+    output_aa_init = c(output_aa_init, init_aa)
+
     output_MSE_init = c(output_MSE_init, tmp_MSE/row_num)
     output_MSE_all = c(output_MSE_all, eval_f(beta_opt, params)/row_num)
 
     # rounding process
     beta_opt_rounded <- round(beta_opt, ths)
     f_opt_rounded <- calc_opt_f(beta_opt_rounded, Tr)
+    beta_init_rounded <- round(beta_init, ths)
+    init_aa_rounded <- calc_opt_f(beta_init_rounded, Tr)
+
     max_dev_rounded <- max(abs(f_opt_rounded - aimed_aa))
+    max_dev_init_rounded <- max(abs(init_aa_rounded - aimed_aa))
 
     largest_deviations_rounded = c(largest_deviations_rounded, max_dev_rounded)
+    largest_deviations_init_rounded = c(largest_deviations_init_rounded, max_dev_init_rounded)
+
     output_nt_freq_rounded = c(output_nt_freq_rounded, beta_opt_rounded)
     output_aa_freq_rounded = c(output_aa_freq_rounded, f_opt_rounded)
+
+    output_nt_init_rounded = c(output_nt_init_rounded, beta_init_rounded)
+    output_aa_init_rounded = c(output_aa_init_rounded, init_aa_rounded)
+
     output_MSE_all_rounded = c(output_MSE_all_rounded, eval_f(beta_opt_rounded, params)/row_num)
 }
 
@@ -618,6 +556,24 @@ write.table(nt_mat_rounded, file = nt_rounded, sep = ",", col.names = FALSE, quo
 ##############print out optimal nt frequency#######################
 
 
+##############print out init nt frequency#######################
+nt_csv=paste(outdir, "/", "nt_init.all.csv", sep = "")
+nt_rounded=paste(outdir, "/", "nt_init.all_rounded.csv", sep = "")
+
+nt_mat <- matrix(output_nt_init, nrow = col_num, byrow = TRUE)
+nt_mat <- t(nt_mat)
+rownames(nt_mat) <- c("A1", "C1", "G1", "T1", "A2", "C2", "G2", "T2", "A3", "C3", "G3", "T3")
+write.table(nt_mat, file = nt_csv, sep = ",", col.names = FALSE, quote=FALSE)
+
+
+nt_mat_rounded <- matrix(output_nt_init_rounded, nrow = col_num, byrow = TRUE)
+nt_mat_rounded <- t(nt_mat_rounded)
+rownames(nt_mat_rounded) <- c("A1", "C1", "G1", "T1", "A2", "C2", "G2", "T2", "A3", "C3", "G3", "T3")
+write.table(nt_mat_rounded, file = nt_rounded, sep = ",", col.names = FALSE, quote=FALSE)
+
+##############print out init nt frequency#######################
+
+
 ##############print out optimal aa frequency#######################
 aa_csv=paste(outdir, "/", "aa_opt.all.csv", sep = "")
 aa_rounded=paste(outdir, "/", "aa_opt.all_rounded.csv", sep = "")
@@ -634,6 +590,23 @@ rownames(aa_mat_rounded) <- c("A", "C", "D", "E", "F", "G", "H", "I", "K", "L", 
 write.table(aa_mat_rounded, file = aa_rounded, sep = ",", col.names = FALSE, quote=FALSE)
 
 ##############print out optimal aa frequency#######################
+
+##############print out init aa frequency#######################
+aa_csv=paste(outdir, "/", "aa_init.all.csv", sep = "")
+aa_rounded=paste(outdir, "/", "aa_init.all_rounded.csv", sep = "")
+
+aa_mat <- matrix(output_aa_init, nrow = col_num, byrow = TRUE)
+aa_mat <- t(aa_mat)
+rownames(aa_mat) <- c("A", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "P", "Q", "R", "S", "T", "V", "W", "Y")
+write.table(aa_mat, file = aa_csv, sep = ",", col.names = FALSE, quote=FALSE)
+
+
+aa_mat_rounded <- matrix(output_aa_init_rounded, nrow = col_num, byrow = TRUE)
+aa_mat_rounded <- t(aa_mat_rounded)
+rownames(aa_mat_rounded) <- c("A", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "P", "Q", "R", "S", "T", "V", "W", "Y")
+write.table(aa_mat_rounded, file = aa_rounded, sep = ",", col.names = FALSE, quote=FALSE)
+
+##############print out init aa frequency#######################
 
 
 ##############print out optimal MSE#######################
@@ -679,3 +652,17 @@ rownames(deviations_mat_rounded) <- c("largest deviations rounded")
 write.table(deviations_mat_rounded, file=largest_deviations_rounded_csv, sep = ",", col.names=FALSE, quote=FALSE)
 ##############print out largest deviations#######################
 
+##############print out init largest deviations#######################
+largest_deviations_csv=paste(outdir, "/", "largest_deviations_init.csv", sep = "")
+largest_deviations_rounded_csv=paste(outdir, "/", "largest_deviations_init_rounded.csv", sep = "")
+
+deviations_mat <- matrix(largest_deviations_init, nrow = col_num, byrow = TRUE)
+deviations_mat <- t(deviations_mat)
+rownames(deviations_mat) <- c("largest deviations_init")
+write.table(deviations_mat, file=largest_deviations_csv, sep = ",", col.names=FALSE, quote=FALSE)
+
+deviations_mat_rounded <- matrix(largest_deviations_init_rounded, nrow = col_num, byrow = TRUE)
+deviations_mat_rounded <- t(deviations_mat_rounded)
+rownames(deviations_mat_rounded) <- c("largest deviations_init rounded")
+write.table(deviations_mat_rounded, file=largest_deviations_rounded_csv, sep = ",", col.names=FALSE, quote=FALSE)
+##############print out init largest deviations#######################

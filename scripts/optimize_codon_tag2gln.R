@@ -345,8 +345,8 @@ eval_h <- function(beta, obj_factor, hessian_lambda, params) {
 
 
 ########################################################################
-## do not edit above code
-## add your code below
+## 
+## 
 ########################################################################
 
 read_f <- function(nt_file, aa_file) {
@@ -378,6 +378,7 @@ args <- commandArgs(trailingOnly = TRUE)
 aa_input = args[1]
 nt_input = args[2]
 outdir = args[3]
+ths = as.numeric(args[4]) # specify threshold for rounding. This should be a positive integer
 input_data = read_f(nt_input, aa_input)
 
 # get number of column (number of aa profiles), and number of row of aa input file
@@ -386,9 +387,23 @@ row_num <- nrow(input_data$aa_data) # this should be 20
 
 # initialize the output
 output_nt_freq = c() # optimal nt frequency
+output_nt_init = c() # init nt frequency
 output_aa_freq = c() # optimal aa frequency
+output_aa_init = c() # init aa frequency
 output_MSE_all = c() # optimal MSE
 output_MSE_init = c() # initial MSE
+
+output_nt_freq_rounded = c() # rounded optimal nt frequency
+output_aa_freq_rounded = c() # rounded optimal aa frequency
+output_nt_init_rounded = c() # rounded init nt frequency
+output_aa_init_rounded = c() # rounded init aa frequency
+output_MSE_all_rounded = c() # rounded optimal MSE
+
+largest_deviations = c() # largest deviations of aa profile
+largest_deviations_rounded = c() # largest deviations of rounded aa profile
+
+largest_deviations_init = c() # largest deviations of aa profile with init
+largest_deviations_init_rounded = c() # largest deviations of rounded aa profile with init
 
 # create output directory if not exists
 dir.create(file.path(outdir), showWarnings = FALSE)
@@ -398,8 +413,10 @@ for (i in 1:col_num) {
     Pa <- t(input_data$aa_data[, (i+1)])
     Pa <- Pa / sum(Pa)
     params <- c(Tr, Pa)
-
-    if (eval_f(beta_init, params)==0) next
+    
+    tmp_MSE <- eval_f(beta_init, params)
+    if (tmp_MSE == 0) next
+    init_aa <- calc_opt_f(beta_init, Tr)	
 
     outfile=paste(outdir, "/tag2gln", ".", i, ".optimize.out", sep = "")
 
@@ -428,14 +445,42 @@ for (i in 1:col_num) {
     beta_opt <- res$solution
     f_opt <- calc_opt_f(beta_opt, Tr)
 
+    aimed_aa <- params[65:84]
+    max_dev <- max(abs(f_opt - aimed_aa))
+    max_dev_init <- max(abs(init_aa - aimed_aa))
+
+    largest_deviations = c(largest_deviations, max_dev)
+    largest_deviations_init = c(largest_deviations_init, max_dev_init)
+
     output_nt_freq = c(output_nt_freq, beta_opt)
     output_aa_freq = c(output_aa_freq, f_opt)
-    output_MSE_init = c(output_MSE_init, eval_f(beta_init, params)/row_num)
-    output_MSE_all = c(output_MSE_all, eval_f(beta_opt, params)/row_num)
-}
 
-# value smaller than thres can be considered as 0
-thres = 10^(-15)
+    output_nt_init = c(output_nt_init, beta_init)
+    output_aa_init = c(output_aa_init, init_aa)
+
+    output_MSE_init = c(output_MSE_init, tmp_MSE/row_num)
+    output_MSE_all = c(output_MSE_all, eval_f(beta_opt, params)/row_num)
+
+    # rounding process
+    beta_opt_rounded <- round(beta_opt, ths)
+    f_opt_rounded <- calc_opt_f(beta_opt_rounded, Tr)
+    beta_init_rounded <- round(beta_init, ths)
+    init_aa_rounded <- calc_opt_f(beta_init_rounded, Tr)
+
+    max_dev_rounded <- max(abs(f_opt_rounded - aimed_aa))
+    max_dev_init_rounded <- max(abs(init_aa_rounded - aimed_aa))
+
+    largest_deviations_rounded = c(largest_deviations_rounded, max_dev_rounded)
+    largest_deviations_init_rounded = c(largest_deviations_init_rounded, max_dev_init_rounded)
+
+    output_nt_freq_rounded = c(output_nt_freq_rounded, beta_opt_rounded)
+    output_aa_freq_rounded = c(output_aa_freq_rounded, f_opt_rounded)
+
+    output_nt_init_rounded = c(output_nt_init_rounded, beta_init_rounded)
+    output_aa_init_rounded = c(output_aa_init_rounded, init_aa_rounded)
+
+    output_MSE_all_rounded = c(output_MSE_all_rounded, eval_f(beta_opt_rounded, params)/row_num)
+}
 
 ##############print out optimal nt frequency#######################
 nt_csv=paste(outdir, "/", "nt_opt.all.csv", sep = "")
@@ -446,9 +491,31 @@ nt_mat <- t(nt_mat)
 rownames(nt_mat) <- c("A1", "C1", "G1", "T1", "A2", "C2", "G2", "T2", "A3", "C3", "G3", "T3")
 write.table(nt_mat, file = nt_csv, sep = ",", col.names = FALSE, quote=FALSE)
 
-nt_mat[nt_mat <= thres] <- 0.0
-write.table(nt_mat, file = nt_rounded, sep = ",", col.names = FALSE, quote=FALSE)
+
+nt_mat_rounded <- matrix(output_nt_freq_rounded, nrow = col_num, byrow = TRUE)
+nt_mat_rounded <- t(nt_mat_rounded)
+rownames(nt_mat_rounded) <- c("A1", "C1", "G1", "T1", "A2", "C2", "G2", "T2", "A3", "C3", "G3", "T3")
+write.table(nt_mat_rounded, file = nt_rounded, sep = ",", col.names = FALSE, quote=FALSE)
+
 ##############print out optimal nt frequency#######################
+
+
+##############print out init nt frequency#######################
+nt_csv=paste(outdir, "/", "nt_init.all.csv", sep = "")
+nt_rounded=paste(outdir, "/", "nt_init.all_rounded.csv", sep = "")
+
+nt_mat <- matrix(output_nt_init, nrow = col_num, byrow = TRUE)
+nt_mat <- t(nt_mat)
+rownames(nt_mat) <- c("A1", "C1", "G1", "T1", "A2", "C2", "G2", "T2", "A3", "C3", "G3", "T3")
+write.table(nt_mat, file = nt_csv, sep = ",", col.names = FALSE, quote=FALSE)
+
+
+nt_mat_rounded <- matrix(output_nt_init_rounded, nrow = col_num, byrow = TRUE)
+nt_mat_rounded <- t(nt_mat_rounded)
+rownames(nt_mat_rounded) <- c("A1", "C1", "G1", "T1", "A2", "C2", "G2", "T2", "A3", "C3", "G3", "T3")
+write.table(nt_mat_rounded, file = nt_rounded, sep = ",", col.names = FALSE, quote=FALSE)
+
+##############print out init nt frequency#######################
 
 
 ##############print out optimal aa frequency#######################
@@ -460,9 +527,30 @@ aa_mat <- t(aa_mat)
 rownames(aa_mat) <- c("A", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "P", "Q", "R", "S", "T", "V", "W", "Y")
 write.table(aa_mat, file = aa_csv, sep = ",", col.names = FALSE, quote=FALSE)
 
-aa_mat[aa_mat <= thres] <- 0.0
-write.table(aa_mat, file = aa_rounded, sep = ",", col.names = FALSE, quote=FALSE)
+
+aa_mat_rounded <- matrix(output_aa_freq_rounded, nrow = col_num, byrow = TRUE)
+aa_mat_rounded <- t(aa_mat_rounded)
+rownames(aa_mat_rounded) <- c("A", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "P", "Q", "R", "S", "T", "V", "W", "Y")
+write.table(aa_mat_rounded, file = aa_rounded, sep = ",", col.names = FALSE, quote=FALSE)
+
 ##############print out optimal aa frequency#######################
+
+##############print out init aa frequency#######################
+aa_csv=paste(outdir, "/", "aa_init.all.csv", sep = "")
+aa_rounded=paste(outdir, "/", "aa_init.all_rounded.csv", sep = "")
+
+aa_mat <- matrix(output_aa_init, nrow = col_num, byrow = TRUE)
+aa_mat <- t(aa_mat)
+rownames(aa_mat) <- c("A", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "P", "Q", "R", "S", "T", "V", "W", "Y")
+write.table(aa_mat, file = aa_csv, sep = ",", col.names = FALSE, quote=FALSE)
+
+
+aa_mat_rounded <- matrix(output_aa_init_rounded, nrow = col_num, byrow = TRUE)
+aa_mat_rounded <- t(aa_mat_rounded)
+rownames(aa_mat_rounded) <- c("A", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "P", "Q", "R", "S", "T", "V", "W", "Y")
+write.table(aa_mat_rounded, file = aa_rounded, sep = ",", col.names = FALSE, quote=FALSE)
+
+##############print out init aa frequency#######################
 
 
 ##############print out optimal MSE#######################
@@ -471,12 +559,14 @@ MSE_rounded=paste(outdir, "/", "MSE_opt.all_rounded.csv", sep = "")
 
 MSE_mat <- matrix(output_MSE_all, nrow = col_num, byrow = TRUE)
 MSE_mat <- t(MSE_mat)
-
 rownames(MSE_mat) <- c("opt_MSE")
 write.table(MSE_mat, file=MSE_csv, sep = ",", col.names=FALSE, quote=FALSE)
 
-MSE_mat[MSE_mat <= thres] <- 0.0
-write.table(MSE_mat, file = MSE_rounded, sep = ",", col.names = FALSE, quote=FALSE)
+MSE_mat_rounded <- matrix(output_MSE_all_rounded, nrow = col_num, byrow = TRUE)
+MSE_mat_rounded <- t(MSE_mat_rounded)
+rownames(MSE_mat_rounded) <- c("opt_MSE_rounded")
+write.table(MSE_mat_rounded, file=MSE_rounded, sep = ",", col.names=FALSE, quote=FALSE)
+
 ##############print out optimal MSE#######################
 
 
@@ -489,3 +579,34 @@ MSE_mat_init <- t(MSE_mat_init)
 rownames(MSE_mat_init) <- c("init_MSE")
 write.table(MSE_mat_init, file=MSE_init_csv, sep = ",", col.names=FALSE, quote=FALSE)
 ##############print out initial MSE#######################
+
+
+##############print out largest deviations#######################
+largest_deviations_csv=paste(outdir, "/", "largest_deviations.csv", sep = "")
+largest_deviations_rounded_csv=paste(outdir, "/", "largest_deviations_rounded.csv", sep = "")
+
+deviations_mat <- matrix(largest_deviations, nrow = col_num, byrow = TRUE)
+deviations_mat <- t(deviations_mat)
+rownames(deviations_mat) <- c("largest deviations")
+write.table(deviations_mat, file=largest_deviations_csv, sep = ",", col.names=FALSE, quote=FALSE)
+
+deviations_mat_rounded <- matrix(largest_deviations_rounded, nrow = col_num, byrow = TRUE)
+deviations_mat_rounded <- t(deviations_mat_rounded)
+rownames(deviations_mat_rounded) <- c("largest deviations rounded")
+write.table(deviations_mat_rounded, file=largest_deviations_rounded_csv, sep = ",", col.names=FALSE, quote=FALSE)
+##############print out largest deviations#######################
+
+##############print out init largest deviations#######################
+largest_deviations_csv=paste(outdir, "/", "largest_deviations_init.csv", sep = "")
+largest_deviations_rounded_csv=paste(outdir, "/", "largest_deviations_init_rounded.csv", sep = "")
+
+deviations_mat <- matrix(largest_deviations_init, nrow = col_num, byrow = TRUE)
+deviations_mat <- t(deviations_mat)
+rownames(deviations_mat) <- c("largest deviations_init")
+write.table(deviations_mat, file=largest_deviations_csv, sep = ",", col.names=FALSE, quote=FALSE)
+
+deviations_mat_rounded <- matrix(largest_deviations_init_rounded, nrow = col_num, byrow = TRUE)
+deviations_mat_rounded <- t(deviations_mat_rounded)
+rownames(deviations_mat_rounded) <- c("largest deviations_init rounded")
+write.table(deviations_mat_rounded, file=largest_deviations_rounded_csv, sep = ",", col.names=FALSE, quote=FALSE)
+##############print out init largest deviations#######################
