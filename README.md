@@ -112,17 +112,17 @@ Below is an output sample when using optimize_codon_allstop.R
 	- nt_opt.all.csv:
 		Optimized nucleotide frequencies for all AA profiles.
 	- nt_opt.all_rounded.csv:
-		Values smaller than a threshold of 10^(-*ths*) in nt_opt.all.csv are rounded to 0,
+		Values smaller than a threshold of 10^(-ths) in nt_opt.all.csv are rounded to 0,
 		and output to this file.
 	- aa_opt.all.csv:
 		Optimized AAs calculated from the optimized nucleotide frequencies.
 	- aa_opt.all_rounded.csv:
-		Values smaller than a threshold of 10^(-*ths*) in aa_opt.all.csv are rounded to 0,
+		Values smaller than a threshold of 10^(-ths) in aa_opt.all.csv are rounded to 0,
 		and output to this file.
 	- MSE_opt.all.csv:
 		MSE between optimized AAs and the input AAs.
 	- MSE_opt.all_rounded.csv:
-		Values smaller than a threshold of 10^(-*ths*) in MSE_opt.all.csv are rounded to 0,
+		Values smaller than a threshold of 10^(-ths) in MSE_opt.all.csv are rounded to 0,
 		and output to this file.
 
 * Output for option with IUPAC code
