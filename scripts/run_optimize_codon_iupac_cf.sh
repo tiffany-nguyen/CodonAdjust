@@ -2,11 +2,12 @@
 
 declare -a iupac=("A" "C" "G" "T" "W" "S" "M" "K" "R" "Y" "B" "D" "H" "V" "N")
 
-aa_input=$1 # input file for aa profiles
-nt_indir=$2 # input directory for IUPAC initial nt frequencies
-cf_val=$3   # control factor (0 < cf_val < 1)
+TYPE=$1     # type of optimize option. should be "allstop", "nostop", "tag2stop", "tag2gln"
+
+aa_input=$2 # input file for aa profiles
+nt_indir=$3 # input directory for IUPAC initial nt frequencies
 outdir=$4   # output directory
-TYPE=$5     # type of optimize option. should be "allstop", "nostop", "tag2stop", "tag2gln"
+ths=$5      # rouding option
 
 mkdir -p $outdir
 
@@ -14,6 +15,7 @@ mkdir -p $outdir
 col_num=$(head -n 1 ${aa_input} | awk -F, '{print NF}')
 LEN=$((col_num - 1))
 
+# run optimization
 for code1 in "${iupac[@]}"; do
     for code2 in "${iupac[@]}"; do
         for code3 in "${iupac[@]}"; do
@@ -21,7 +23,7 @@ for code1 in "${iupac[@]}"; do
             nt_input="${nt_indir}/nt_${param}.csv"
 	    param_outdir="${outdir}/${param}"
 	    mkdir -p ${param_outdir}
-	    Rscript optimize_codon_${TYPE}_cf.R ${aa_input} ${nt_input} ${cf_val} ${param_outdir}
+	    Rscript optimize_codon_${TYPE}_cf.R ${aa_input} ${nt_input} ${param_outdir} ${ths}
         done
     done
 done

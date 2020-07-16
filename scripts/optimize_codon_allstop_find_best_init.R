@@ -370,7 +370,7 @@ iupac = c("A", "C", "G", "T", "W", "S", "M", "K", "R", "Y", "B", "D", "H", "V", 
 
 aa_input_data = read_aa(aa_input)
 row_num <- nrow(aa_input_data$aa_data) # this should be 20
-col_num <- 14 # both NnB and TCR have 14 profiles
+col_num <- ncol(aa_input_data$aa_data) - 1
 
 best_init_iupac_MSE  = rep(1, col_num)
 best_init_iupac_code = rep("", col_num)
