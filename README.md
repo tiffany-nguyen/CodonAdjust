@@ -1,5 +1,6 @@
 # CodonAdjust
-CodonAdjust is a free software to optimize a nucleotide composition mimicking a certain AA profile. CodonAdjust formulates the optimization of a nucleotide composition as a non-convex optimization problem which minimizes the squared error between the desired and the calculated AA profiles. We provide CodonAdjust with four different options, which have various customization in practical scenarios such as selecting or avoiding specific codons.
+CodonAdjust is a free software to optimize a codon nucleotide composition mimicking a certain amino acids profile (AA profile). CodonAdjust formulates the optimization of a codon nucleotide composition as a non-convex optimization problem which minimizes the squared error between the desired and the calculated AA profiles.
+We provide CodonAdjust with four different options, which have various customization in practical scenarios such as selecting or avoiding specific codons.
 
 # Required Packages ############################
 * R 3.6.x
@@ -34,36 +35,37 @@ CodonAdjust is a free software to optimize a nucleotide composition mimicking a 
 # Usage
 ## Options without control factor
 	1. For "allstop" option
-		Rscript optimize_codon_allstop.R aa_input nt_input outdir
+		Rscript optimize_codon_allstop.R aa_input nt_input outdir ths
 	2. For "nostop" option
-		Rscript optimize_codon_nostop.R aa_input nt_input outdir
+		Rscript optimize_codon_nostop.R aa_input nt_input outdir ths
 	3. For "tag2stop" option
-		Rscript optimize_codon_tag2stop.R aa_input nt_input outdir
+		Rscript optimize_codon_tag2stop.R aa_input nt_input outdir ths
 	4. For "tag2gln" option
-		Rscript optimize_codon_tag2gln.R aa_input nt_input outdir
+		Rscript optimize_codon_tag2gln.R aa_input nt_input outdir ths
 
 	where,
 	- aa_input: input file of targeted amino acids profiles, where each profile is written in a column.
 	- nt_input: input file of initial nucleotide frequencies for each aa profile. Each of the initial 
 	nucleotide frequency is written in a column.
 	- outdir  : output directory to save the optimized results.
+	- ths     : number of decimal points to be rounded
 
 	See "sample" folder for an example of aa_input and nt_input.
 	
 ## Options with control factor
 	1. For "allstop" option
-		Rscript optimize_codon_allstop_cf.R aa_input nt_input cf_val outdir
+		Rscript optimize_codon_allstop_cf.R aa_input nt_input cf_val outdir ths
 	2. For "nostop" option
-		Rscript optimize_codon_nostop_cf.R aa_input nt_input cf_val outdir
+		Rscript optimize_codon_nostop_cf.R aa_input nt_input cf_val outdir ths
 	3. For "tag2stop" option
-		Rscript optimize_codon_tag2stop_cf.R aa_input nt_input cf_val outdir
+		Rscript optimize_codon_tag2stop_cf.R aa_input nt_input cf_val outdir ths
 	4. For "tag2gln" option
-		Rscript optimize_codon_tag2gln_cf.R aa_input nt_input cf_val outdir
+		Rscript optimize_codon_tag2gln_cf.R aa_input nt_input cf_val outdir ths
 		
 	where,
 	- cf_val  : control factor, which is used to guarantee a certain rate for all targeted amino acids.
 	This should be a positive number smaller than 1.0.
-	- other parameters (aa_input, nt_input, outdir): described in "Options without control factor"
+	- other parameters (aa_input, nt_input, outdir, ths): described in "Options without control factor"
 	
 ## Option for global optimization search
 	1. Move to scripts/iupac_codes folder, and run below command to prepare nucleotide input 
@@ -74,17 +76,28 @@ CodonAdjust is a free software to optimize a nucleotide composition mimicking a 
 	Use tar -xzvf iupac_code.tar.gz to decompress this file before running python script.
 	The output will be stored in IUPAC_input folder.
 	2. Run optimize program in the scripts folder to find global optimization.
-		bash run_optimize_codon_iupac.sh aa_input nt_indir outdir TYPE
-	where,
-	- nt_indir: specifies path to the IUPAC_input folder generated in step 1. 
+		bash run_optimize_codon_iupac.sh TYPE aa_input nt_indir outdir ths
+	where,ths
 	- TYPE:  specifies the type of optimize option to use. 
+	- nt_indir: specifies path to the IUPAC_input folder generated in step 1. 
 	It should be "allstop", "nostop", "tag2stop", "tag2gln".
-	- other parameters (aa_input, nt_input, outdir): described in "Options without control factor"
-		
+	- other parameters (aa_input, outdir, ths): described in "Options without control factor"
+	
+## Option for optimization with best initial MSE
+    These programs search for IUPAC codon which has smallest MSE, and use it as initial input for CodonAdjust.
+	1. For "allstop" option
+		Rscript optimize_codon_allstop_find_best_init.R aa_input iupac_dir outdir ths
+	2. For "nostop" option
+		Rscript optimize_codon_nostop_find_best_init.R aa_input iupac_dir outdir ths
+	3. For "tag2stop" option
+		Rscript optimize_codon_tag2stop_find_best_init.R aa_input iupac_dir outdir ths
+	4. For "tag2gln" option
+		Rscript optimize_codon_tag2gln_find_best_init.R aa_input iupac_dir outdir ths
+	
 ## Example
-* Rscript optimize_codon_allstop.R sample/aa_input.csv sample/nt_input.csv allstop_output
-* Rscript optimize_codon_allstop_cf.R sample/aa_input.csv sample/nt_input.csv 0.1 allstop_output
-* bash run_optimize_codon_iupac.sh sample/aa_input.csv iupac_codes/IUPAC_input allstop
+* Rscript optimize_codon_allstop.R sample/aa_input.csv sample/nt_input.csv allstop_output 2
+* Rscript optimize_codon_allstop_cf.R sample/aa_input.csv sample/nt_input.csv 0.1 allstop_output 2
+* bash run_optimize_codon_iupac.sh allstop sample/aa_input.csv iupac_codes/IUPAC_input allstop_global_search 2
 
 ## Output sample
 * Output for optimize_codon_*option*.R, and optimize_codon_*option*_cf.R
@@ -99,17 +112,17 @@ Below is an output sample when using optimize_codon_allstop.R
 	- nt_opt.all.csv:
 		Optimized nucleotide frequencies for all AA profiles.
 	- nt_opt.all_rounded.csv:
-		Values smaller than a threshold of 10^(-15) in nt_opt.all.csv are rounded to 0,
+		Values smaller than a threshold of 10^(-*ths*) in nt_opt.all.csv are rounded to 0,
 		and output to this file.
 	- aa_opt.all.csv:
 		Optimized AAs calculated from the optimized nucleotide frequencies.
 	- aa_opt.all_rounded.csv:
-		Values smaller than a threshold of 10^(-15) in aa_opt.all.csv are rounded to 0,
+		Values smaller than a threshold of 10^(-*ths*) in aa_opt.all.csv are rounded to 0,
 		and output to this file.
 	- MSE_opt.all.csv:
 		MSE between optimized AAs and the input AAs.
 	- MSE_opt.all_rounded.csv:
-		Values smaller than a threshold of 10^(-15) in MSE_opt.all.csv are rounded to 0,
+		Values smaller than a threshold of 10^(-*ths*) in MSE_opt.all.csv are rounded to 0,
 		and output to this file.
 
 * Output for option with IUPAC code
@@ -120,4 +133,4 @@ Below is an output sample when using optimize_codon_allstop.R
 	![iupac_sample](/img/CodonAdjust_iupac_sample.png)
 		
 # Reference
-* T.D.N, Y.S, T.K, "CodonAdjust: a software for in silico design of a mutagenesis library with specific amino acid profiles", *submitted*.
+* T.D.N, Y.S, T.K, "CodonAdjust: a software for in silico design of a mutagenesis library with specific amino acid profiles", *Protein Engineering, Design and Selection*, issue 32-11, 2019.
